@@ -5,6 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard GA - Sistem Perbaikan</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .feature-item.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            position: relative;
+        }
+        .feature-item.disabled::after {
+            content: "Coming Soon";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            display: none;
+        }
+        .feature-item.disabled:hover::after {
+            display: block;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -21,29 +45,74 @@
             <div class="features">
                 <h3>📋 Fitur yang Akan Tersedia:</h3>
                 <div class="feature-grid">
-                    <div class="feature-item">
+                    <div class="feature-item disabled" title="Fitur akan segera hadir">
                         <span class="feature-icon">✅</span>
                         <span>Approve/Reject Ticket</span>
                     </div>
-                    <div class="feature-item">
+                    <div class="feature-item disabled" title="Fitur akan segera hadir">
                         <span class="feature-icon">👷</span>
                         <span>Assign Teknisi</span>
                     </div>
-                    <div class="feature-item">
+                    <div class="feature-item disabled" title="Fitur akan segera hadir">
                         <span class="feature-icon">📊</span>
                         <span>Monitor Progress</span>
                     </div>
-                    <div class="feature-item">
+                    <div class="feature-item disabled" title="Fitur akan segera hadir">
                         <span class="feature-icon">📈</span>
                         <span>Report Bulanan</span>
                     </div>
                 </div>
             </div>
 
+            <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 20px; border-radius: 8px; margin: 30px 0;">
+                <h4 style="margin-top: 0; color: #856404;">💡 Cara Menggunakan Sementara:</h4>
+                <ol style="color: #856404; line-height: 1.8;">
+                    <li><strong>Buka Google Sheet</strong> dengan tombol di bawah</li>
+                    <li><strong>Cek tab "Ticket_Perbaikan"</strong> untuk melihat semua ticket masuk</li>
+                    <li><strong>Update status</strong> ticket langsung di Google Sheet:
+                        <ul>
+                            <li>Kolom I: Status Approval (Disetujui/Ditolak)</li>
+                            <li>Kolom J: Prioritas (Urgent/Normal/Low)</li>
+                            <li>Kolom K: PIC Teknisi</li>
+                            <li>Kolom L: Tanggal Dijadwalkan</li>
+                            <li>Kolom N: Status Pekerjaan</li>
+                        </ul>
+                    </li>
+                    <li><strong>Outlet bisa cek status</strong> via website Portal Outlet</li>
+                </ol>
+            </div>
+
             <div style="text-align: center; margin-top: 40px;">
-                <a href="https://docs.google.com/spreadsheets/d/1b0RXSvtmk1-pYAAZUfU6C5CXHpYw13Hf2-7qJ4Iujp8/edit" target="_blank" class="btn btn-success">
+                <a href="https://docs.google.com/spreadsheets/d/1b0RXSvtmk1-pYAAzUfU6C5CXHpYw1sHf2-7qJ4lujp8/edit" 
+                   target="_blank" 
+                   class="btn btn-success" 
+                   style="font-size: 1.2rem; padding: 15px 30px;">
                     📊 Buka Google Sheet
                 </a>
+                <p style="color: #666; margin-top: 15px; font-size: 0.9rem;">
+                    <em>Pastikan Anda sudah login dengan akun Google yang memiliki akses ke sheet</em>
+                </p>
+            </div>
+
+            <div style="margin-top: 50px; padding: 20px; background: #e3f2fd; border-radius: 8px;">
+                <h4 style="color: #1976d2; margin-top: 0;">📌 Quick Links:</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <a href="outlet.html" class="btn btn-primary" style="text-decoration: none;">
+                        🏪 Portal Outlet
+                    </a>
+                    <a href="https://docs.google.com/spreadsheets/d/1b0RXSvtmk1-pYAAzUfU6C5CXHpYw1sHf2-7qJ4lujp8/edit#gid=0" 
+                       target="_blank" 
+                       class="btn btn-primary" 
+                       style="text-decoration: none;">
+                        📋 Tab: Ticket Perbaikan
+                    </a>
+                    <a href="https://docs.google.com/spreadsheets/d/1b0RXSvtmk1-pYAAzUfU6C5CXHpYw1sHf2-7qJ4lujp8/edit#gid=1234567890" 
+                       target="_blank" 
+                       class="btn btn-primary" 
+                       style="text-decoration: none;">
+                        🏢 Tab: Master Outlet
+                    </a>
+                </div>
             </div>
         </main>
 
