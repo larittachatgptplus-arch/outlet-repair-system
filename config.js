@@ -9,7 +9,7 @@ const CONFIG = {
     
     // Google Apps Script Web App URL
     // Ganti dengan URL deployment Anda
-    BACKEND_URL: 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE',
+    BACKEND_URL: 'https://script.google.com/macros/s/AKfycbzMlnDlvSlALn0kIEKBYcqgyx0V4voPebJHEF5tFPHNbQ76DMtoTGeC2nTfryoF-TOg/exec',
     
     // Upload settings
     MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
