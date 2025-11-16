@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Perbaikan Outlet - Laritta Bakery</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🔧 Sistem Perbaikan Outlet</h1>
+            <p>Sistem manajemen perbaikan outlet terintegrasi</p>
+        </header>
+
+        <main class="main-content">
+            <div class="role-selection">
+                <h2>Pilih Role Anda:</h2>
+                <div class="role-cards">
+                    <div class="role-card" onclick="showPage('outlet')">
+                        <div class="role-icon">🏪</div>
+                        <h3>Outlet</h3>
+                        <p>Laporkan kerusakan dan lihat status perbaikan</p>
+                        <button class="btn btn-primary">Masuk sebagai Outlet</button>
+                    </div>
+                    
+                    <div class="role-card" onclick="showPage('ga')">
+                        <div class="role-icon">👨‍💼</div>
+                        <h3>General Affair (GA)</h3>
+                        <p>Kelola permohonan perbaikan dan monitoring</p>
+                        <button class="btn btn-success">Masuk sebagai GA</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="features">
+                <h3>📋 Fitur Sistem:</h3>
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <span class="feature-icon">✅</span>
+                        <span>Pelaporan kerusakan real-time</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">📸</span>
+                        <span>Upload foto dokumentasi</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">📊</span>
+                        <span>Tracking status perbaikan</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">📈</span>
+                        <span>Report dan analisis performa</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2025 Laritta Bakery - Sistem Perbaikan Outlet</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

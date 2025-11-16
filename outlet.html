@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Outlet - Sistem Perbaikan</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🏪 Portal Outlet</h1>
+            <p>Laporkan kerusakan dan pantau status perbaikan</p>
+            <button class="btn btn-warning" onclick="window.location.href='index.html'">⬅ Kembali ke Home</button>
+        </header>
+
+        <main class="main-content">
+            <!-- Tab Navigation -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('report')">📝 Lapor Kerusakan</button>
+                <button class="tab-btn" onclick="switchTab('status')">📊 Lihat Status</button>
+            </div>
+
+            <!-- Tab 1: Lapor Kerusakan -->
+            <div id="reportTab" class="tab-content active">
+                <h2>📝 Form Laporan Kerusakan</h2>
+                <p class="subtitle">Isi form di bawah untuk melaporkan kerusakan di outlet Anda</p>
+
+                <div id="alertContainer"></div>
+
+                <form id="reportForm">
+                    <div class="form-group">
+                        <label for="hub">🏢 HUB *</label>
+                        <select id="hub" required>
+                            <option value="">-- Loading HUB... --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="outlet">🏪 Outlet *</label>
+                        <select id="outlet" required disabled>
+                            <option value="">-- Pilih HUB terlebih dahulu --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="kategori">🔧 Kategori Kerusakan *</label>
+                        <select id="kategori" required>
+                            <option value="">-- Pilih Kategori --</option>
+                            <option value="Listrik">Listrik</option>
+                            <option value="AC (Air Conditioner)">AC (Air Conditioner)</option>
+                            <option value="Bangunan">Bangunan (struktur, dinding, atap)</option>
+                            <option value="Peralatan">Peralatan (mesin, freezer, dll)</option>
+                            <option value="Display">Display (etalase, rak)</option>
+                            <option value="Sanitasi">Sanitasi (kamar mandi, wastafel)</option>
+                            <option value="Lain-lain">Lain-lain</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="deskripsi">📝 Deskripsi Kerusakan *</label>
+                        <textarea id="deskripsi" rows="4" required 
+                                  placeholder="Jelaskan detail kerusakan, lokasi spesifik di outlet, dan dampaknya terhadap operasional"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="urgensi">⚠️ Tingkat Urgensi *</label>
+                        <select id="urgensi" required>
+                            <option value="">-- Pilih Tingkat Urgensi --</option>
+                            <option value="Urgent">Urgent (mengganggu operasional, butuh segera)</option>
+                            <option value="Tidak Urgent">Tidak Urgent (tidak mengganggu, tapi perlu diperbaiki)</option>
+                            <option value="Bisa Belakangan">Bisa Belakangan (minor, bisa dijadwalkan fleksibel)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>📸 Foto Kerusakan * (Max 3 foto, 5MB per foto)</label>
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-placeholder">
+                                <svg width="64" height="64" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                                </svg>
+                                <p><strong>Klik atau drag & drop foto di sini</strong></p>
+                                <p class="small">Mendukung: JPG, PNG (max 5MB per foto)</p>
+                            </div>
+                            <input type="file" id="photoInput" accept="image/*" multiple hidden>
+                        </div>
+                        <div id="previewContainer" class="preview-container"></div>
+                        <div id="uploadProgress" class="upload-progress hidden">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressFill"></div>
+                            </div>
+                            <p id="progressText">Uploading...</p>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block" id="submitBtn">
+                        🚀 Submit Laporan
+                    </button>
+                </form>
+            </div>
+
+            <!-- Tab 2: Lihat Status -->
+            <div id="statusTab" class="tab-content">
+                <h2>📊 Status Ticket Anda</h2>
+                <p class="subtitle">Pilih outlet untuk melihat semua ticket yang pernah dilaporkan</p>
+
+                <div class="form-group">
+                    <label for="outletFilter">🏪 Pilih Outlet:</label>
+                    <select id="outletFilter">
+                        <option value="">-- Pilih Outlet --</option>
+                    </select>
+                </div>
+
+                <div id="ticketContainer">
+                    <p class="text-center text-muted">Pilih outlet untuk melihat status ticket</p>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2025 Laritta Bakery - Sistem Perbaikan Outlet</p>
+        </footer>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="outlet.js"></script>
+</body>
+</html>
