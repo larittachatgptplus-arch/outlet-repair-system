@@ -74,24 +74,16 @@
                     </div>
 
                     <div class="form-group">
-                        <label>📸 Foto Kerusakan * (Max 3 foto, 5MB per foto)</label>
-                        <div class="upload-area" id="uploadArea">
-                            <div class="upload-placeholder">
-                                <svg width="64" height="64" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
-                                </svg>
-                                <p><strong>Klik atau drag & drop foto di sini</strong></p>
-                                <p class="small">Mendukung: JPG, PNG (max 5MB per foto)</p>
-                            </div>
-                            <input type="file" id="photoInput" accept="image/*" multiple hidden>
-                        </div>
-                        <div id="previewContainer" class="preview-container"></div>
-                        <div id="uploadProgress" class="upload-progress hidden">
-                            <div class="progress-bar">
-                                <div class="progress-fill" id="progressFill"></div>
-                            </div>
-                            <p id="progressText">Uploading...</p>
-                        </div>
+                        <label for="linkFoto">📸 Link Foto Kerusakan *</label>
+                        <input type="url" id="linkFoto" required
+                               placeholder="https://drive.google.com/file/d/...">
+                        <small style="color: #666; display: block; margin-top: 8px;">
+                            📌 <strong>Cara upload foto ke Google Drive:</strong><br>
+                            1. Buka Google Drive → Upload foto kerusakan<br>
+                            2. Klik kanan foto → "Get link" → Set "Anyone with the link"<br>
+                            3. Copy link → Paste di form ini<br>
+                            <em>Atau gunakan link foto dari WhatsApp/platform lain</em>
+                        </small>
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-block" id="submitBtn">
@@ -124,6 +116,280 @@
     </div>
 
     <script src="config.js"></script>
-    <script src="outlet.js"></script>
+    <script>
+        // Load data saat halaman dibuka
+        document.addEventListener('DOMContentLoaded', function() {
+            loadHubList();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('hub').addEventListener('change', function() {
+                loadOutletsByHub(this.value);
+            });
+            
+            document.getElementById('reportForm').addEventListener('submit', handleFormSubmit);
+            
+            document.getElementById('outletFilter').addEventListener('change', function() {
+                loadTicketStatus(this.value);
+            });
+        }
+
+        async function loadHubList() {
+            const hubSelect = document.getElementById('hub');
+            const outletFilterSelect = document.getElementById('outletFilter');
+            
+            try {
+                const response = await fetch(`${CONFIG.BACKEND_URL}?action=getHubs`);
+                const data = await response.json();
+                
+                if (data.success && data.hubs) {
+                    populateHubDropdown(data.hubs);
+                    populateOutletFilter(data.hubs);
+                } else {
+                    throw new Error('Backend not available');
+                }
+            } catch (error) {
+                console.log('Using fallback data');
+                populateHubDropdown(CONFIG.FALLBACK_DATA.hubs);
+                populateOutletFilter(CONFIG.FALLBACK_DATA.hubs);
+            }
+        }
+
+        function populateHubDropdown(hubs) {
+            const hubSelect = document.getElementById('hub');
+            hubSelect.innerHTML = '<option value="">-- Pilih HUB --</option>';
+            
+            hubs.forEach(hub => {
+                const option = document.createElement('option');
+                option.value = hub;
+                option.textContent = hub;
+                hubSelect.appendChild(option);
+            });
+        }
+
+        function populateOutletFilter(hubs) {
+            const outletFilterSelect = document.getElementById('outletFilter');
+            
+            hubs.forEach(hub => {
+                loadOutletsByHubForFilter(hub, outletFilterSelect);
+            });
+        }
+
+        async function loadOutletsByHub(hub) {
+            const outletSelect = document.getElementById('outlet');
+            
+            if (!hub) {
+                outletSelect.innerHTML = '<option value="">-- Pilih HUB terlebih dahulu --</option>';
+                outletSelect.disabled = true;
+                return;
+            }
+            
+            outletSelect.innerHTML = '<option value="">⏳ Loading...</option>';
+            outletSelect.disabled = true;
+            
+            try {
+                const response = await fetch(`${CONFIG.BACKEND_URL}?action=getOutlets&hub=${encodeURIComponent(hub)}`);
+                const data = await response.json();
+                
+                if (data.success && data.outlets) {
+                    populateOutletDropdown(data.outlets);
+                } else {
+                    throw new Error('Backend not available');
+                }
+            } catch (error) {
+                console.log('Using fallback data');
+                const outlets = CONFIG.FALLBACK_DATA.outlets[hub] || [];
+                populateOutletDropdown(outlets);
+            }
+        }
+
+        function populateOutletDropdown(outlets) {
+            const outletSelect = document.getElementById('outlet');
+            outletSelect.innerHTML = '<option value="">-- Pilih Outlet --</option>';
+            
+            if (outlets.length === 0) {
+                outletSelect.innerHTML = '<option value="">Tidak ada outlet untuk HUB ini</option>';
+                return;
+            }
+            
+            outlets.forEach(outlet => {
+                const option = document.createElement('option');
+                option.value = outlet;
+                option.textContent = outlet;
+                outletSelect.appendChild(option);
+            });
+            
+            outletSelect.disabled = false;
+        }
+
+        async function loadOutletsByHubForFilter(hub, selectElement) {
+            try {
+                const response = await fetch(`${CONFIG.BACKEND_URL}?action=getOutlets&hub=${encodeURIComponent(hub)}`);
+                const data = await response.json();
+                
+                if (data.success && data.outlets) {
+                    data.outlets.forEach(outlet => {
+                        const option = document.createElement('option');
+                        option.value = outlet;
+                        option.textContent = `${outlet} (${hub})`;
+                        selectElement.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.log('Error loading outlets for filter');
+            }
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Submitting...';
+            
+            try {
+                const formData = {
+                    ticketId: generateTicketID(),
+                    timestamp: new Date().toISOString(),
+                    hub: document.getElementById('hub').value,
+                    outlet: document.getElementById('outlet').value,
+                    kategori: document.getElementById('kategori').value,
+                    deskripsi: document.getElementById('deskripsi').value,
+                    urgensi: document.getElementById('urgensi').value,
+                    linkFoto: document.getElementById('linkFoto').value,
+                    status: 'Menunggu Approval'
+                };
+                
+                const response = await fetch(CONFIG.BACKEND_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain',
+                    },
+                    body: JSON.stringify({
+                        action: 'submitTicket',
+                        data: formData
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('success', `✅ Ticket berhasil dibuat! Nomor ticket: ${formData.ticketId}`);
+                    document.getElementById('reportForm').reset();
+                    document.getElementById('outlet').disabled = true;
+                } else {
+                    throw new Error(result.message || 'Submit failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('danger', '❌ Error: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '🚀 Submit Laporan';
+            }
+        }
+
+        async function loadTicketStatus(outlet) {
+            if (!outlet) return;
+            
+            const container = document.getElementById('ticketContainer');
+            container.innerHTML = '<div class="spinner"></div>';
+            
+            try {
+                const response = await fetch(`${CONFIG.BACKEND_URL}?action=getTickets&outlet=${encodeURIComponent(outlet)}`);
+                const data = await response.json();
+                
+                if (data.success && data.tickets) {
+                    displayTickets(data.tickets);
+                } else {
+                    throw new Error('Failed to load tickets');
+                }
+            } catch (error) {
+                container.innerHTML = '<p class="text-center text-muted">Error loading tickets</p>';
+            }
+        }
+
+        function displayTickets(tickets) {
+            const container = document.getElementById('ticketContainer');
+            
+            if (tickets.length === 0) {
+                container.innerHTML = '<p class="text-center text-muted">Belum ada ticket untuk outlet ini</p>';
+                return;
+            }
+            
+            let html = `
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Ticket ID</th>
+                            <th>Tanggal</th>
+                            <th>Kategori</th>
+                            <th>Urgensi</th>
+                            <th>Status</th>
+                            <th>PIC</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            tickets.forEach(ticket => {
+                const urgencyClass = ticket.urgensi === 'Urgent' ? 'badge-urgent' : 
+                                    ticket.urgensi === 'Tidak Urgent' ? 'badge-normal' : 'badge-low';
+                const statusClass = ticket.status === 'Selesai' ? 'badge-done' :
+                                  ticket.status === 'On Progress' ? 'badge-progress' :
+                                  ticket.status === 'Ditolak' ? 'badge-rejected' : 'badge-pending';
+                
+                html += `
+                    <tr>
+                        <td><strong>${ticket.ticketId}</strong></td>
+                        <td>${formatDate(ticket.timestamp)}</td>
+                        <td>${ticket.kategori}</td>
+                        <td><span class="badge ${urgencyClass}">${ticket.urgensi}</span></td>
+                        <td><span class="badge ${statusClass}">${ticket.status}</span></td>
+                        <td>${ticket.picTeknisi || '-'}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            if (tabName === 'report') {
+                document.getElementById('reportTab').classList.add('active');
+                document.querySelector('.tab-btn:first-child').classList.add('active');
+            } else {
+                document.getElementById('statusTab').classList.add('active');
+                document.querySelector('.tab-btn:last-child').classList.add('active');
+            }
+        }
+
+        function showAlert(type, message) {
+            const alertContainer = document.getElementById('alertContainer');
+            alertContainer.innerHTML = `
+                <div class="alert alert-${type}">
+                    ${message}
+                </div>
+            `;
+            
+            setTimeout(() => {
+                alertContainer.innerHTML = '';
+            }, 5000);
+        }
+    </script>
 </body>
 </html>
